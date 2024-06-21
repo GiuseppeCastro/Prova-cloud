@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # Serviço para o MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_database
+    ports:
+      - "3307:3306"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: exemplos
+      MYSQL_USER: senac
+      MYSQL_PASSWORD: root
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./senac-20241-backend-exemplos/src/main/resources/scripts:/docker-entrypoint-initdb.d
+# Serviço para a sua aplicação Java
+  java_app:
+    build: ./senac-20241-backend-exemplos
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+  angular_app:   
+    build: ./senac-frontend-20241-exemplos-master
+    ports: 
+      - "4200:4200"
+    depends_on:
+      - java_app
